@@ -2,7 +2,7 @@ from os.path import dirname, join
 
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
-from requests import post
+from requests import get, post
 import json
 
 __author__ = 'robconnolly'
@@ -20,6 +20,23 @@ class HomeAssistantClient(object):
             'x-ha-access': password,
             'Content-Type': 'application/json'
         }
+
+    def find_entity(self, entity, types):
+        if self.ssl:
+            req = get("%s/api/states" % self.url, headers=self.headers, verify=False)
+        else:
+            req = get("%s/api/states" % self.url, headers=self.headers)
+
+        if req.status_code == 200:
+            for state in req.json():
+                try:
+                    if state['entity_id'].split(".")[0] in types:
+                        if entity == state['attributes']['friendly_name'].lower():
+                            return state['entity_id']
+                except KeyError:
+                    print "Missing friendly name:" + state['entity_id']
+
+        return None
 
     def execute_service(self, domain, service, data):
         if self.ssl:
@@ -51,16 +68,19 @@ class HomeAssistantSkill(MycroftSkill):
         entity = message.data["Entity"]
         action = message.data["Action"]
 
-        # TODO: we should use the HA api to search for a matching entity
-        ha_entity = {"entity_id": "light." + entity.replace(" ", "_")}
+        ha_entity = self.ha.find_entity(entity, ['light', 'switch', 'scene', 'input_boolean'])
         print ha_entity
+        if ha_entity is None:
+            self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
+            return
+        ha_data = {'entity_id': ha_entity}
 
         if action == "on":
             self.speak("Turning on %s" % entity)
-            self.ha.execute_service("light", "turn_on", ha_entity)
+            self.ha.execute_service("homeassistant", "turn_on", ha_data)
         elif action == "off":
             self.speak("Turning off %s" % entity)
-            self.ha.execute_service("light", "turn_off", ha_entity)
+            self.ha.execute_service("homeassistant", "turn_off", ha_data)
         else:
             self.speak("I don't know what you want me to do.")
 
