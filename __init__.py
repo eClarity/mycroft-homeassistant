@@ -3,6 +3,7 @@ from os.path import dirname, join
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from requests import get, post
+from fuzzywuzzy import fuzz
 import json
 
 __author__ = 'robconnolly'
@@ -28,13 +29,19 @@ class HomeAssistantClient(object):
             req = get("%s/api/states" % self.url, headers=self.headers)
 
         if req.status_code == 200:
+            best_score = 0
+            best_entity = None
             for state in req.json():
                 try:
                     if state['entity_id'].split(".")[0] in types:
-                        if entity == state['attributes']['friendly_name'].lower():
-                            return state['entity_id']
+                        score = fuzz.ratio(entity, state['attributes']['friendly_name'].lower())
+                        print state['entity_id'], score
+                        if score > best_score:
+                            best_score = score
+                            best_entity = {"id": state['entity_id'], "name": state['attributes']['friendly_name']}
                 except KeyError:
                     print "Missing friendly name:" + state['entity_id']
+            return best_entity
 
         return None
 
@@ -73,13 +80,13 @@ class HomeAssistantSkill(MycroftSkill):
         if ha_entity is None:
             self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
             return
-        ha_data = {'entity_id': ha_entity}
+        ha_data = {'entity_id': ha_entity['id']}
 
         if action == "on":
-            self.speak("Turning on %s" % entity)
+            self.speak("Turned on %s" % ha_entity['name'])
             self.ha.execute_service("homeassistant", "turn_on", ha_data)
         elif action == "off":
-            self.speak("Turning off %s" % entity)
+            self.speak("Turned of %s" % ha_entity['name'])
             self.ha.execute_service("homeassistant", "turn_off", ha_data)
         else:
             self.speak("I don't know what you want me to do.")
