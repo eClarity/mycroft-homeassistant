@@ -35,12 +35,11 @@ class HomeAssistantClient(object):
                 try:
                     if state['entity_id'].split(".")[0] in types:
                         score = fuzz.ratio(entity, state['attributes']['friendly_name'].lower())
-                        print state['entity_id'], score
                         if score > best_score:
                             best_score = score
                             best_entity = {"id": state['entity_id'], "name": state['attributes']['friendly_name']}
                 except KeyError:
-                    print "Missing friendly name:" + state['entity_id']
+                    pass
             return best_entity
 
         return None
@@ -76,7 +75,6 @@ class HomeAssistantSkill(MycroftSkill):
         action = message.data["Action"]
 
         ha_entity = self.ha.find_entity(entity, ['light', 'switch', 'scene', 'input_boolean'])
-        print ha_entity
         if ha_entity is None:
             self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
             return
