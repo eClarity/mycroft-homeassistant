@@ -1,0 +1,2 @@
+(?P<Action>dim|bright) (?P<Entity>.*)
+(turn|switch) (?P<Action>on|off) (?P<Entity>.*)
