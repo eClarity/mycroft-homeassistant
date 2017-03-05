@@ -2,15 +2,17 @@ from os.path import dirname, join
 
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
+from mycroft.util.log import getLogger
+
 from requests import get, post
 from fuzzywuzzy import fuzz
 import json
 
 __author__ = 'robconnolly'
+LOGGER = getLogger(__name__)
 
 
 class HomeAssistantClient(object):
-
     def __init__(self, host, password, port=8123, ssl=False):
         self.ssl = ssl
         if self.ssl:
@@ -34,10 +36,13 @@ class HomeAssistantClient(object):
             for state in req.json():
                 try:
                     if state['entity_id'].split(".")[0] in types:
+                        LOGGER.debug("Entity Data: %s" % state)
                         score = fuzz.ratio(entity, state['attributes']['friendly_name'].lower())
                         if score > best_score:
                             best_score = score
-                            best_entity = {"id": state['entity_id'], "name": state['attributes']['friendly_name']}
+                            best_entity = { "id": state['entity_id'],
+                                            "dev_name": state['attributes']['friendly_name'],
+                                            "state": state['state'] }
                 except KeyError:
                     pass
             return best_entity
@@ -58,12 +63,12 @@ class HomeAssistantSkill(MycroftSkill):
             self.config.get('password'), ssl=self.config.get('ssl', False))
 
     def initialize(self):
-        self.load_vocab_files(join(dirname(__file__), 'vocab', 'en-us'))
-
-        prefixes = ['turn', 'switch']
-        self.__register_prefixed_regex(prefixes, "(?P<Action>on|off) (?P<Entity>.*)")
-
-        intent = IntentBuilder("TurnOnOffIntent").require("TurnOnOffKeyword").require("Action").require("Entity").build()
+        self.load_vocab_files(join(dirname(__file__), 'vocab', self.lang))
+        self.load_regex_files(join(dirname(__file__), 'regex', self.lang))
+        #prefixes = ['turn', 'switch']
+        #self.__register_prefixed_regex(prefixes, "(?P<Action>on|off) (?P<Entity>.*)")
+        intent = IntentBuilder("LightingIntent").require("LightActionKeyword").require("Action").require("Entity").build()
+        # TODO - Locks, Temperature, Identity location
         self.register_intent(intent, self.handle_intent)
 
     def __register_prefixed_regex(self, prefixes, suffix_regex):
@@ -76,18 +81,28 @@ class HomeAssistantSkill(MycroftSkill):
 
         ha_entity = self.ha.find_entity(entity, ['light', 'switch', 'scene', 'input_boolean'])
         if ha_entity is None:
-            self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
+            #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
+            self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
             return
         ha_data = {'entity_id': ha_entity['id']}
 
         if action == "on":
-            self.speak("Turned on %s" % ha_entity['name'])
-            self.ha.execute_service("homeassistant", "turn_on", ha_data)
+            if ha_entity['state'] == action:
+                self.speak_dialog('homeassistant.device.already',\
+                        data={ "dev_name": ha_entity['dev_name'], 'action': action })
+            else:
+                self.speak_dialog('homeassistant.device.on', data=ha_entity)
+                self.ha.execute_service("homeassistant", "turn_on", ha_data)
         elif action == "off":
-            self.speak("Turned of %s" % ha_entity['name'])
-            self.ha.execute_service("homeassistant", "turn_off", ha_data)
+            if ha_entity['state'] == action:
+                self.speak_dialog('homeassistant.device.already',\
+                        data={"dev_name": ha_entity['dev_name'], 'action': action })
+            else:
+                self.speak_dialog('homeassistant.device.off', data=ha_entity)
+                self.ha.execute_service("homeassistant", "turn_off", ha_data)
         else:
-            self.speak("I don't know what you want me to do.")
+            ##self.speak("I don't know what you want me to do.")
+            self.speak_dialog('homeassistant.error.sorry')
 
     def stop(self):
         pass
