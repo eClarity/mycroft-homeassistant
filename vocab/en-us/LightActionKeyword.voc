@@ -1,4 +1,4 @@
 turn
 switch
-dim
-bright|brighten
+dim|dimmer|dark|darken
+bright|brighten|brighter

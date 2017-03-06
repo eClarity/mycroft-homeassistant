@@ -4,6 +4,7 @@ from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
 
+from os.path import dirname, join
 from requests import get, post
 from fuzzywuzzy import fuzz
 import json
@@ -65,20 +66,18 @@ class HomeAssistantSkill(MycroftSkill):
     def initialize(self):
         self.load_vocab_files(join(dirname(__file__), 'vocab', self.lang))
         self.load_regex_files(join(dirname(__file__), 'regex', self.lang))
-        #prefixes = ['turn', 'switch']
-        #self.__register_prefixed_regex(prefixes, "(?P<Action>on|off) (?P<Entity>.*)")
+        self.__build_lighting_intent()
+
+    def __build_lighting_intent(self):
         intent = IntentBuilder("LightingIntent").require("LightActionKeyword").require("Action").require("Entity").build()
         # TODO - Locks, Temperature, Identity location
-        self.register_intent(intent, self.handle_intent)
+        self.register_intent(intent, self.handle_lighting_intent)
 
-    def __register_prefixed_regex(self, prefixes, suffix_regex):
-        for prefix in prefixes:
-            self.register_regex(prefix + ' ' + suffix_regex)
-
-    def handle_intent(self, message):
+    def handle_lighting_intent(self, message):
         entity = message.data["Entity"]
         action = message.data["Action"]
-
+        LOGGER.debug("Entity: %s" % entity)
+        LOGGER.debug("Action: %s" % action)
         ha_entity = self.ha.find_entity(entity, ['light', 'switch', 'scene', 'input_boolean'])
         if ha_entity is None:
             #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
@@ -100,6 +99,22 @@ class HomeAssistantSkill(MycroftSkill):
             else:
                 self.speak_dialog('homeassistant.device.off', data=ha_entity)
                 self.ha.execute_service("homeassistant", "turn_off", ha_data)
+        elif action == "dim":
+            if ha_entity['state'] == "off":
+                self.speak_dialog('homeassistant.device.off', data={"dev_name": ha_entity['dev_name']})
+                self.speak("Can not dim %s. It is off." % ha_entity['dev_name'])
+            else:
+                #self.speak_dialog('homeassistant.device.off', data=ha_entity)
+                self.speak("Dimmed the %s" % ha_entity['dev_name'])
+                #self.ha.execute_service("homeassistant", "turn_off", ha_data)
+        elif action == "brighten":
+            if ha_entity['state'] == "off":
+                self.speak_dialog('homeassistant.device.off', data={"dev_name": ha_entity['dev_name']})
+                self.speak("Can not brighten %s. It is off." % ha_entity['dev_name'])
+            else:
+                #self.speak_dialog('homeassistant.device.off', data=ha_entity)
+                self.speak("Increased brightness of %s" % ha_entity['dev_name'])
+                #self.ha.execute_service("homeassistant", "turn_off", ha_data)
         else:
             ##self.speak("I don't know what you want me to do.")
             self.speak_dialog('homeassistant.error.sorry')
