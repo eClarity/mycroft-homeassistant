@@ -17,7 +17,8 @@ class HomeAssistantClient(object):
     def __init__(self, host, password, port=8123, ssl=False):
         self.ssl = ssl
         if self.ssl:
-            self.url = "https://%s:%d" % (host, '443')
+            port=443
+            self.url = "https://%s:%d" % (host, port)
         else:
             self.url = "http://%s:%d" % (host, port)
         self.headers = {
