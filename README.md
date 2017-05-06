@@ -10,13 +10,17 @@ entity types (`light`, `switch`, `scene` and `input_boolean`).
 Clone the repository into your `~/.mycroft/skills` directory. Then install the
 dependencies inside your mycroft virtual environment:
 
+If on picroft just skip the workon part and the directory will be /opt/mycroft/skills
+
 ```
 cd ~/.mycroft/skills
-git clone https://gitlab.com/robconnolly/mycroft-home-assistant.git HomeAssistantSkill
+git clone https://github.com/BongoEADGC6/mycroft-home-assistant HomeAssistantSkill
 workon mycroft
 cd HomeAssistantSkill
 pip install -r requirements.txt
 ```
+
+
 
 ## Configuration
 
@@ -45,7 +49,7 @@ didn't quite get what you said.
 
 ## TODO
 
- * Implement SSL certificate verification
+ * Implement SSL certificate verification - complete/PR Pending
  * New intent for scene activation, e.g. "Mycroft, activate scene..."
  * New intent for opening/closing cover entities
  * New intent for locking/unlocking lock entities (with added security?)
