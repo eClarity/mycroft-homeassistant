@@ -1,1 +1,1 @@
-(what is the status|where is) (?P<Entity>.*)
+(what is|where is) (?P<Entity>.*)
