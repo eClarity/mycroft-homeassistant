@@ -90,11 +90,17 @@ class HomeAssistantSkill(MycroftSkill):
         self.load_vocab_files(join(dirname(__file__), 'vocab', self.lang))
         self.load_regex_files(join(dirname(__file__), 'regex', self.lang))
         self.__build_lighting_intent()
+        self.__build_sensor_intent()
 
     def __build_lighting_intent(self):
         intent = IntentBuilder("LightingIntent").require("LightActionKeyword").require("Action").require("Entity").build()
         # TODO - Locks, Temperature, Identity location
         self.register_intent(intent, self.handle_lighting_intent)
+
+    def __build_sensor_intent(self):
+        intent = IntentBuilder("SensorIntent").require("SensorStatusKeyword").require("Entity").build()
+        # TODO - Locks, Temperature, Identity location
+        self.register_intent(intent, self.handle_sensor_intent)
 
     def handle_lighting_intent(self, message):
         entity = message.data["Entity"]
@@ -144,9 +150,9 @@ class HomeAssistantSkill(MycroftSkill):
     #
     # In progress, still testing.
     #
-    def handle_sensor_intent(self):
-        entity = 'brian work'
-        print("Entity: %s" % entity)
+    def handle_sensor_intent(self, message):
+        entity = message.data["Entity"]
+        LOGGER.debug("Entity: %s" % entity)
         ha_entity = ha.find_entity(entity, ['sensor'])
         if ha_entity is None:
             #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
@@ -155,10 +161,16 @@ class HomeAssistantSkill(MycroftSkill):
         ha_data = ha_entity
         entity = ha_entity['id']
         unit_measurement = ha.find_entity_attr(entity)
-        if unit_measurement != 'null':
-            return ha_entity['']
+        if unit_measurement[0] != 'null':
+            sensor_unit = unit_measurement[0]
+            sensor_name = unit_measurement[1]
+            sensor_state = unit_measurement[2]
+            self.speak_dialog(('Currently {} is {} {}'.format(sensor_name, sensor_state, sensor_unit)))
+        else:
+            sensor_name = unit_measurement[1]
+            sensor_state = unit_measurement[2]
+            self.speak_dialog('Currently {} is {}'.format(sensor_name, sensor_state))
 
-        return ha_data
 
     def stop(self):
         pass
