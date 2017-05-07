@@ -153,7 +153,7 @@ class HomeAssistantSkill(MycroftSkill):
     def handle_sensor_intent(self, message):
         entity = message.data["Entity"]
         LOGGER.debug("Entity: %s" % entity)
-        ha_entity = ha.find_entity(entity, ['sensor'])
+        ha_entity = self.ha.find_entity(entity, ['sensor'])
         if ha_entity is None:
             #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
             self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
