@@ -79,7 +79,7 @@ class HomeAssistantSkill(MycroftSkill):
         action = message.data["Action"]
         LOGGER.debug("Entity: %s" % entity)
         LOGGER.debug("Action: %s" % action)
-        ha_entity = self.ha.find_entity(entity, ['light', 'switch', 'scene', 'input_boolean'])
+        ha_entity = self.ha.find_entity(entity, ['group','light', 'switch', 'scene', 'input_boolean'])
         if ha_entity is None:
             #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
             self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
