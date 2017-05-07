@@ -48,6 +48,28 @@ class HomeAssistantClient(object):
                 except KeyError:
                     pass
             return best_entity
+    #
+    # checking the entity attributes to be used in the response dialog.
+    #
+    def find_entity_attr(self, entity):
+        if self.ssl:
+            req = get("%s/api/states" % self.url, headers=self.headers, verify=True)
+        else:
+            req = get("%s/api/states" % self.url, headers=self.headers)
+
+        if req.status_code == 200:
+            for attr in req.json():
+                if attr['entity_id'] == entity:
+                    try:
+                        unit_measurement = attr['attributes']['unit_of_measurement']
+                        sensor_name = attr['attributes']['friendly_name']
+                        sensor_state = attr['state']
+                        return unit_measurement, sensor_name, sensor_state
+                    except:
+                        unit_measurement = 'null'
+                        sensor_name = attr['attributes']['friendly_name']
+                        sensor_state = attr['state']
+                        return unit_measurement, sensor_name, sensor_state
 
         return None
 
@@ -119,6 +141,24 @@ class HomeAssistantSkill(MycroftSkill):
         else:
             ##self.speak("I don't know what you want me to do.")
             self.speak_dialog('homeassistant.error.sorry')
+    #
+    # In progress, still testing.
+    #
+    def handle_sensor_intent(self):
+        entity = 'brian work'
+        print("Entity: %s" % entity)
+        ha_entity = ha.find_entity(entity, ['sensor'])
+        if ha_entity is None:
+            #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
+            self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
+            return
+        ha_data = ha_entity
+        entity = ha_entity['id']
+        unit_measurement = ha.find_entity_attr(entity)
+        if unit_measurement != 'null':
+            return ha_entity['']
+
+        return ha_data
 
     def stop(self):
         pass
