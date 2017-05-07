@@ -165,11 +165,11 @@ class HomeAssistantSkill(MycroftSkill):
             sensor_unit = unit_measurement[0]
             sensor_name = unit_measurement[1]
             sensor_state = unit_measurement[2]
-            self.speak_dialog(('Currently {} is {} {}'.format(sensor_name, sensor_state, sensor_unit)))
+            self.speak(('Currently {} is {} {}'.format(sensor_name, sensor_state, sensor_unit)))
         else:
             sensor_name = unit_measurement[1]
             sensor_state = unit_measurement[2]
-            self.speak_dialog('Currently {} is {}'.format(sensor_name, sensor_state))
+            self.speak('Currently {} is {}'.format(sensor_name, sensor_state))
 
 
     def stop(self):
