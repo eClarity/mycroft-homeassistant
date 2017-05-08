@@ -47,11 +47,19 @@ the HA API and looking for the closest matching friendly name. The matching is f
 to the `fuzzywuzzy` module) so it should find the right entity most of the time, even if Mycroft
 didn't quite get what you said.
 
+## Supported Phrases/Entities
+ Phrases are what is, where is, when is.  So where is Paul, what is brian commute to work (Commute to work would be in friendly name)
+ 
+ * Lights
+ * Sensor Status
+ 
+
 ## TODO
- * Return sensor status - In progress see sensor_intent branch.
  * New intent for scene activation, e.g. "Mycroft, activate scene..."
+ * Script intents processing
  * New intent for opening/closing cover entities
  * New intent for locking/unlocking lock entities (with added security?)
+ * New intent for thermostat values, raising, etc.
  * ...
 
 ## Contributing
