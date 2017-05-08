@@ -1,5 +1,6 @@
-
 # Home Assistant Skill for Mycroft
+
+based off the original code from https://github.com/BongoEADGC6/mycroft-home-assistant, spun off my own version since they seem to be inactive.
 
 This is a skill to add [Home Assistant](https://home-assistant.io) support to
 [Mycroft](https://mycroft.ai). Currently is supports turning on and off several
@@ -14,7 +15,7 @@ If on picroft just skip the workon part and the directory will be /opt/mycroft/s
 
 ```
 cd ~/.mycroft/skills
-git clone https://github.com/BongoEADGC6/mycroft-home-assistant HomeAssistantSkill
+git clone https://github.com/btotharye/mycroft-homeassistant HomeAssistantSkill
 workon mycroft
 cd HomeAssistantSkill
 pip install -r requirements.txt
@@ -34,8 +35,7 @@ Add a block to your `~/.mycroft/mycroft.conf` file like this:
   }
 ```
 
-NOTE: SSL support is currently insecure as it does not verify the cert. This means it will
-work with a self signed cert, but shouldn't be used accross the internet.
+NOTE: SSL support is currently secure as it does verify the cert.
 
 You will then need to restart mycroft.
 
@@ -48,8 +48,7 @@ to the `fuzzywuzzy` module) so it should find the right entity most of the time,
 didn't quite get what you said.
 
 ## TODO
-
- * Implement SSL certificate verification - complete/PR Pending
+ * Return sensor status - In progress see sensor_intent branch.
  * New intent for scene activation, e.g. "Mycroft, activate scene..."
  * New intent for opening/closing cover entities
  * New intent for locking/unlocking lock entities (with added security?)
