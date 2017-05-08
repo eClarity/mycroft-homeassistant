@@ -9,7 +9,7 @@ from requests import get, post
 from fuzzywuzzy import fuzz
 import json
 
-__author__ = 'robconnolly'
+__author__ = 'robconnolly, btotharye'
 LOGGER = getLogger(__name__)
 
 
