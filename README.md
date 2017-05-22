@@ -45,13 +45,33 @@ Say something like "Hey Mycroft, turn on living room lights". Currently availabl
 are "turn on" and "turn off". Matching to Home Assistant entity names is done by scanning
 the HA API and looking for the closest matching friendly name. The matching is fuzzy (thanks
 to the `fuzzywuzzy` module) so it should find the right entity most of the time, even if Mycroft
-didn't quite get what you said.
+didn't quite get what you said.  I have further expanded this to also look at groups as well as lights.  This way if you say turn on the office light, it will do the group and not just 1 light, this can easily be modified to your preference by just removing group's from the fuzzy logic in the code.
+
+
+Example Code:
+So in the code in this section you can just remove group, etc to your liking for the lighting.  I will eventually set this up as variables you set in your config file soon.
+
+```
+def handle_lighting_intent(self, message):
+        entity = message.data["Entity"]
+        action = message.data["Action"]
+        LOGGER.debug("Entity: %s" % entity)
+        LOGGER.debug("Action: %s" % action)
+        ha_entity = self.ha.find_entity(entity, ['group','light', 'switch', 'scene', 'input_boolean'])
+        if ha_entity is None:
+            #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
+            self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
+            return
+        ha_data = {'entity_id': ha_entity['id']}
+```
+
 
 ## Supported Phrases/Entities
  Phrases are what is, where is, when is.  So where is Paul, what is brian commute to work (Commute to work would be in friendly name)
  
  * Lights
  * Sensor Status
+ * Groups of lights, or groups in general
  
 
 ## TODO
