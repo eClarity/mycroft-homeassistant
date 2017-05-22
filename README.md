@@ -4,7 +4,7 @@ based off the original code from https://github.com/BongoEADGC6/mycroft-home-ass
 
 This is a skill to add [Home Assistant](https://home-assistant.io) support to
 [Mycroft](https://mycroft.ai). Currently is supports turning on and off several
-entity types (`light`, `switch`, `scene` and `input_boolean`).
+entity types (`light`, `switch`, `scene`, `groups` and `input_boolean`).
 
 ## Installation
 
