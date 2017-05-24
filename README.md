@@ -70,11 +70,11 @@ def handle_lighting_intent(self, message):
 
 
 ## Supported Phrases/Entities
- Phrases are what is, where is, when is.  So where is Paul, what is brian commute to work (Commute to work would be in friendly name)
- 
- * Lights
- * Sensor Status
- * Groups of lights, or groups in general
+Currently the phrases are:
+* Ask home assistant where is brian (Brian is a sensor for home/not home)
+* Ask home assistant what is the weather (it would be another sensor called weather or fuzzy matched to it)
+* Turn on office (Can be a group, light, switch)
+* Turn off office (Can be a group, light, switch)
  
 
 ## TODO
