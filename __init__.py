@@ -91,6 +91,7 @@ class HomeAssistantSkill(MycroftSkill):
         self.load_regex_files(join(dirname(__file__), 'regex', self.lang))
         self.__build_lighting_intent()
         self.__build_sensor_intent()
+        self.__build_automation_intent()
 
     def __build_lighting_intent(self):
         intent = IntentBuilder("LightingIntent").require("LightActionKeyword").require("Action").require("Entity").build()
