@@ -80,7 +80,6 @@ Currently the phrases are:
 
 
 ## TODO
- * New intent for scene activation, e.g. "Mycroft, activate scene..."
  * Script intents processing
  * New intent for opening/closing cover entities
  * New intent for locking/unlocking lock entities (with added security?)
