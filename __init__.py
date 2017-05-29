@@ -163,7 +163,6 @@ class HomeAssistantSkill(MycroftSkill):
             self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
             return
         ha_data = ha_entity
-        entity = ha_entity['id']
         self.ha.execute_service('automation', 'trigger', ha_data)
         self.speak_dialog('homeassistant.automation.trigger', data={"dev_name": ha_entity['dev_name']})
 
