@@ -98,7 +98,7 @@ class HomeAssistantSkill(MycroftSkill):
         self.register_intent(intent, self.handle_lighting_intent)
 
     def __build_automation_intent(self):
-        intent = IntentBuilder("AutomationIntent").require("AutomationActionKeyword").require("Action").require("Entity").build()
+        intent = IntentBuilder("AutomationIntent").require("AutomationActionKeyword").optionally("Action").require("Entity").build()
         self.register_intent(intent, self.handle_automation_intent)
 
     def __build_sensor_intent(self):
