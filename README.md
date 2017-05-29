@@ -50,13 +50,6 @@ the HA API and looking for the closest matching friendly name. The matching is f
 to the `fuzzywuzzy` module) so it should find the right entity most of the time, even if Mycroft
 didn't quite get what you said.  I have further expanded this to also look at groups as well as lights.  This way if you say turn on the office light, it will do the group and not just 1 light, this can easily be modified to your preference by just removing group's from the fuzzy logic in the code.
 
-Current Phrases:
- - Hey Mycroft, turn on office (turn on the group office)
- - Hey Mycroft, turn on office light (to turn on the light named office)
- - Hey Mycroft, activate Bedtime (Bedtime is an automation)
- - Hey Mycroft, turn on Movietime (Movietime is a scene)
- - Hey Mycroft, ask home asssistant where is/what is something (The something can be a sensor in homeassistant)
-
 
 Example Code:
 So in the code in this section you can just remove group, etc to your liking for the lighting.  I will eventually set this up as variables you set in your config file soon.
@@ -78,10 +71,12 @@ def handle_lighting_intent(self, message):
 
 ## Supported Phrases/Entities
 Currently the phrases are:
-* Ask home assistant where is brian (Brian is a sensor for home/not home)
-* Ask home assistant what is the weather (it would be another sensor called weather or fuzzy matched to it)
-* Turn on office (Can be a group, light, switch)
-* Turn off office (Can be a group, light, switch)
+* Hey Mycroft, turn on office (turn on the group office)
+* Hey Mycroft, turn on office light (to turn on the light named office)
+* Hey Mycroft, activate Bedtime (Bedtime is an automation)
+* Hey Mycroft, turn on Movietime (Movietime is a scene)
+* Hey Mycroft, ask home asssistant where is/what is something (The something can be a sensor in homeassistant)
+
 
 
 ## TODO
