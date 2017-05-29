@@ -1,3 +1,4 @@
 (?P<Action>dim|brighten) (?P<Entity>.*)
-(?P<Entity>.*) (?P<Action>brighter|darker) 
+(?P<Entity>.*) (?P<Action>brighter|darker)
 (turn|switch) (?P<Action>on|off) (?P<Entity>.*)
+(?P<Action>activate) (?P<Entity>.*)
