@@ -164,7 +164,7 @@ class HomeAssistantSkill(MycroftSkill):
             return
         ha_data = ha_entity
         entity = ha_entity['id']
-        ha.execute_service('automation', 'trigger', ha_data)
+        self.ha.execute_service('automation', 'trigger', ha_data)
         self.speak_dialog('homeassistant.automation.trigger', data={"dev_name": ha_entity['dev_name']})
 
 
