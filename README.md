@@ -71,11 +71,13 @@ def handle_lighting_intent(self, message):
 
 ## Supported Phrases/Entities
 Currently the phrases are:
-* Ask home assistant where is brian (Brian is a sensor for home/not home)
-* Ask home assistant what is the weather (it would be another sensor called weather or fuzzy matched to it)
-* Turn on office (Can be a group, light, switch)
-* Turn off office (Can be a group, light, switch)
- 
+* Hey Mycroft, turn on office (turn on the group office)
+* Hey Mycroft, turn on office light (to turn on the light named office)
+* Hey Mycroft, activate Bedtime (Bedtime is an automation)
+* Hey Mycroft, turn on Movietime (Movietime is a scene)
+* Hey Mycroft, ask home asssistant where is/what is something (The something can be a sensor in homeassistant)
+
+
 
 ## TODO
  * New intent for scene activation, e.g. "Mycroft, activate scene..."
@@ -96,4 +98,3 @@ All contributions welcome:
 ## Licence
 
 See [`LICENCE`](https://gitlab.com/robconnolly/mycroft-home-assistant/blob/master/LICENSE).
-

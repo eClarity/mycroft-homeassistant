@@ -91,11 +91,16 @@ class HomeAssistantSkill(MycroftSkill):
         self.load_regex_files(join(dirname(__file__), 'regex', self.lang))
         self.__build_lighting_intent()
         self.__build_sensor_intent()
+        self.__build_automation_intent()
 
     def __build_lighting_intent(self):
         intent = IntentBuilder("LightingIntent").require("LightActionKeyword").require("Action").require("Entity").build()
         # TODO - Locks, Temperature, Identity location
         self.register_intent(intent, self.handle_lighting_intent)
+
+    def __build_automation_intent(self):
+        intent = IntentBuilder("AutomationIntent").require("AutomationActionKeyword").require("Entity").build()
+        self.register_intent(intent, self.handle_automation_intent)
 
     def __build_sensor_intent(self):
         intent = IntentBuilder("SensorIntent").require("SensorStatusKeyword").require("Entity").build()
@@ -147,6 +152,22 @@ class HomeAssistantSkill(MycroftSkill):
         else:
             ##self.speak("I don't know what you want me to do.")
             self.speak_dialog('homeassistant.error.sorry')
+
+
+    def handle_automation_intent(self, message):
+        entity = message.data["Entity"]
+        LOGGER.debug("Entity: %s" % entity)
+        ha_entity = self.ha.find_entity(entity, ['automation'])
+        ha_data = {'entity_id': ha_entity['id']}
+        if ha_entity is None:
+            #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
+            self.speak_dialog('homeassistant.device.unknown', data={"dev_name": ha_entity['dev_name']})
+            return
+        LOGGER.debug("Triggered automation on: {}".format(ha_data))
+        self.ha.execute_service('automation', 'trigger', ha_data)
+        self.speak_dialog('homeassistant.automation.trigger', data={"dev_name": ha_entity['dev_name']})
+
+
     #
     # In progress, still testing.
     #
