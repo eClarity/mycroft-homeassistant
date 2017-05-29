@@ -155,9 +155,7 @@ class HomeAssistantSkill(MycroftSkill):
 
     def handle_automation_intent(self, message):
         entity = message.data["Entity"]
-        action = message.data["Action"]
         LOGGER.debug("Entity: %s" % entity)
-        LOGGER.debug("Action: %s" % action)
         ha_entity = self.ha.find_entity(entity, ['automation'])
         if ha_entity is None:
             #self.speak("Sorry, I can't find the Home Assistant entity %s" % entity)
